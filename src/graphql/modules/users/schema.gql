@@ -1,0 +1,26 @@
+type User {
+  id: ID
+  email: String
+  password: String
+  secretKey: String
+}
+
+type CreateUserPayload {
+  user: User
+  success: Boolean!
+  message: String!
+}
+
+type Query {
+  user(id: ID!): User!
+  users: [User!]!
+}
+
+input UserInput {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  registerUser(email: String!, password: String): CreateUserPayload!
+}
