@@ -6,6 +6,5 @@ export interface IContextRequest {
 
 export interface IContext {
   user?: IUser;
-  userId?: string;
   error?: string;
 }

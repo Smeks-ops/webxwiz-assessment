@@ -39,12 +39,12 @@ const server = new ApolloServer({
       if (!user) {
         return { error: 'Invalid token' };
       }
-
-      return { user, userId: sub };
+      return { user };
     } catch (error) {
       return { error: error.message || 'An error occurred' };
     }
   },
+  introspection: true,
 });
 const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/webxwiz';
 

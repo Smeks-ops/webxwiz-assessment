@@ -26,6 +26,7 @@ type Enable2FAResponse {
 type Query {
   user(id: ID!): User!
   users: [User!]!
+  regenerate2FAQrCode: Enable2FAResponse!
 }
 
 input UserInput {
@@ -35,7 +36,7 @@ input UserInput {
 
 type Mutation {
   registerUser(email: String!, password: String): CreateUserResponse!
-  login(email: String!, password: String! secretKey: String): LoginResponse!
+  login(email: String!, password: String!, secretKey: String): LoginResponse!
   resetPassword(email: String!, oldPassword: String!, newPassword: String!): CreateUserResponse!
   enable2FA(email: String!): Enable2FAResponse!
-} 
+}

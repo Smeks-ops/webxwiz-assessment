@@ -1,5 +1,6 @@
 import { generateUserSecretKey, signToken } from '../../../helpers/auth.helpers';
 import {
+  IGenerate2FAQrCode,
   ILoginInput,
   ILoginResponse,
   IResetPasswordInput,
@@ -9,8 +10,8 @@ import User from '../../../models/User';
 import * as bcrypt from 'bcrypt';
 import * as QRCode from 'qrcode';
 
-
 export default class UserService {
+    // This method registers a new user with the provided input
   static async registerUser(input: IUser): Promise<IUser> {
     try {
       // Check if a user with the same email already exists
@@ -51,12 +52,12 @@ export default class UserService {
         throw new Error('Invalid login credentials');
       }
 
-      if(user.twoFactorAuthEnabled === true) {
-        if(!secretKey) {
+      if (user.twoFactorAuthEnabled === true) {
+        if (!secretKey) {
           throw new Error('2FA is enabled for this user. Please provide a secret key');
         }
 
-        if(secretKey !== user.secretKey) {
+        if (secretKey !== user.secretKey) {
           throw new Error('Invalid secret key');
         }
       }
@@ -106,7 +107,7 @@ export default class UserService {
     }
   }
 
-  static async enable2FA(email: string) {
+  static async enable2FA(email: string): Promise<IGenerate2FAQrCode> {
     try {
       const user = await User.findOne({ email });
 
@@ -116,6 +117,33 @@ export default class UserService {
 
       if (user.secretKey || user.twoFactorAuthEnabled === true) {
         throw new Error('2FA is already enabled for this user');
+      }
+
+      const secretKey = await generateUserSecretKey(user.email);
+      const qrCode = await QRCode.toDataURL(secretKey);
+
+      await User.findByIdAndUpdate(
+        { _id: user.id },
+        { secretKey, twoFactorAuthEnabled: true },
+        { new: true },
+      );
+
+      return qrCode;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  static async regenerate2FAQrCode(email: string): Promise<IGenerate2FAQrCode> {
+    try {
+      const user = await User.findOne({ email });
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      if (!user.secretKey || user.twoFactorAuthEnabled === false) {
+        throw new Error('2FA is not enabled for this user. Please enable 2FA first');
       }
 
       const secretKey = await generateUserSecretKey(user.email);

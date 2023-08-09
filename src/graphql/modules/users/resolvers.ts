@@ -1,3 +1,4 @@
+import { IContext } from '../../../types/context';
 import {
   MutationCreateUserArgs,
   MutationEnable2FAArgs,
@@ -92,22 +93,25 @@ const resolvers = {
         throw new Error(error.message);
       }
     },
+  },
 
-    // generate2FAQrCode: async (_, { email }: MutationEnable2FAArgs) => {
-    //   try {
-    //     const validatedInput = enable2FAInputSchema.parse({ email });
+  Query: {
+    regenerate2FAQrCode: async (_, args, context: IContext) => {
+      try {
+        const { email } = context.user;
+        const validatedInput = enable2FAInputSchema.parse({ email });
 
-    //     const qrCode = await UserService.generate2FAQrCode(validatedInput.email);
+        const qrCode = await UserService.regenerate2FAQrCode(validatedInput.email);
 
-    //     return {
-    //       qrCode,
-    //       success: true,
-    //       message: 'QR code generated successfully',
-    //     };
-    //   } catch (error) {
-    //     throw new Error(error.message);
-    //   }
-    // },
+        return {
+          code: qrCode,
+          success: true,
+          message: 'QR code generated successfully',
+        };
+      } catch (error) {
+        throw new Error(error.message);
+      }
+    },
   },
 };
 
