@@ -1,5 +1,7 @@
 # User Authentication and Two-Factor Authorization Application
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/cf58f4ef8be7447b9ec7b40b4fe65f15)](https://app.codacy.com/gh/Smeks-ops/webxwiz-assessment?utm_source=github.com&utm_medium=referral&utm_content=Smeks-ops/webxwiz-assessment&utm_campaign=Badge_Grade)
+
 This is a small application developed to manage user authentication and two-factor authorization using TypeScript, Apollo Server, Express, MongoDB, and JSON Web Tokens (JWT).
 
 ## Table of Contents
