@@ -47,7 +47,7 @@ const server = new ApolloServer({
   introspection: true,
   persistedQueries: false,
 });
-const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/webxwiz';
+const mongoURI = process.env.DATABASE_URI || '';
 
 if (!mongoURI) {
   throw new Error('MongoDB URI not provided in the environment variables.');
