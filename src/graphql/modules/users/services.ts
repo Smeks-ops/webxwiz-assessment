@@ -1,4 +1,4 @@
-import { signToken } from '../../../helpers/auth.helpers';
+import { generateUserSecretKey, signToken } from '../../../helpers/auth.helpers';
 import {
   ILoginInput,
   ILoginResponse,
@@ -7,6 +7,8 @@ import {
 } from '../../../interfaces/user.interface';
 import User from '../../../models/User';
 import * as bcrypt from 'bcrypt';
+import * as QRCode from 'qrcode';
+
 
 export default class UserService {
   static async registerUser(input: IUser): Promise<IUser> {
@@ -34,7 +36,7 @@ export default class UserService {
   }
 
   static async login(input: ILoginInput): Promise<ILoginResponse> {
-    const { email, password } = input;
+    const { email, password, secretKey } = input;
 
     try {
       const user = await User.findOne({ email });
@@ -47,6 +49,16 @@ export default class UserService {
 
       if (!isPasswordValid) {
         throw new Error('Invalid login credentials');
+      }
+
+      if(user.twoFactorAuthEnabled === true) {
+        if(!secretKey) {
+          throw new Error('2FA is enabled for this user. Please provide a secret key');
+        }
+
+        if(secretKey !== user.secretKey) {
+          throw new Error('Invalid secret key');
+        }
       }
 
       const accessToken = signToken({
@@ -89,6 +101,33 @@ export default class UserService {
       );
 
       return updatedUser;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  static async enable2FA(email: string) {
+    try {
+      const user = await User.findOne({ email });
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      if (user.secretKey || user.twoFactorAuthEnabled === true) {
+        throw new Error('2FA is already enabled for this user');
+      }
+
+      const secretKey = await generateUserSecretKey(user.email);
+      const qrCode = await QRCode.toDataURL(secretKey);
+
+      await User.findByIdAndUpdate(
+        { _id: user.id },
+        { secretKey, twoFactorAuthEnabled: true },
+        { new: true },
+      );
+
+      return qrCode;
     } catch (error) {
       throw new Error(error.message);
     }

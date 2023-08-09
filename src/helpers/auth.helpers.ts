@@ -14,3 +14,19 @@ export const signToken = (payload: any) => {
       return { valid: false, decoded: null, expired: true };
     }
   };
+
+  export const generateUserSecretKey = async (text: string): Promise<string> => {
+    try {
+      let result = ' ';
+      const characters =
+        `${text}ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789`;
+      const charactersLength = characters.length;
+      for (let i = 0; i < 18; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      }
+      const code = result;
+      return code;
+    } catch (error) {
+      throw new Error(error);
+    }
+  };

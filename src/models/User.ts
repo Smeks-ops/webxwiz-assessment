@@ -14,6 +14,11 @@ const UserSchema = new mongoose.Schema({
   secretKey: {
     type: String,
     required: false,
+    unique: true,
+  },
+  twoFactorAuthEnabled: {
+    type: Boolean,
+    default: false,
   },
   createdAt: {
     type: Date,

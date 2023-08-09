@@ -1,10 +1,16 @@
 import {
   MutationCreateUserArgs,
+  MutationEnable2FAArgs,
   MutationLoginArgs,
   MutationResetPasswordArgs,
 } from '../../../types/generated';
 import UserService from './services';
-import { loginInputSchema, registrationInputSchema, resetPasswordInputSchema } from './validators';
+import {
+  enable2FAInputSchema,
+  loginInputSchema,
+  registrationInputSchema,
+  resetPasswordInputSchema,
+} from './validators';
 
 const resolvers = {
   Mutation: {
@@ -28,14 +34,15 @@ const resolvers = {
       }
     },
 
-    login: async (_, { email, password }: MutationLoginArgs) => {
+    login: async (_, { email, password, secretKey }: MutationLoginArgs) => {
       try {
         // Validate input against the schema with zod
-        const validatedInput = loginInputSchema.parse({ email, password });
+        const validatedInput = loginInputSchema.parse({ email, password, secretKey });
 
         const loggedInUser = await UserService.login({
           email: validatedInput.email,
           password: validatedInput.password,
+          secretKey: validatedInput.secretKey,
         });
 
         return {
@@ -69,6 +76,38 @@ const resolvers = {
         throw new Error(error.message);
       }
     },
+
+    enable2FA: async (_, { email }: MutationEnable2FAArgs) => {
+      try {
+        const validatedInput = enable2FAInputSchema.parse({ email });
+
+        const code = await UserService.enable2FA(validatedInput.email);
+
+        return {
+          code,
+          success: true,
+          message: '2FA enabled successfully',
+        };
+      } catch (error) {
+        throw new Error(error.message);
+      }
+    },
+
+    // generate2FAQrCode: async (_, { email }: MutationEnable2FAArgs) => {
+    //   try {
+    //     const validatedInput = enable2FAInputSchema.parse({ email });
+
+    //     const qrCode = await UserService.generate2FAQrCode(validatedInput.email);
+
+    //     return {
+    //       qrCode,
+    //       success: true,
+    //       message: 'QR code generated successfully',
+    //     };
+    //   } catch (error) {
+    //     throw new Error(error.message);
+    //   }
+    // },
   },
 };
 

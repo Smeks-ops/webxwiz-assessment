@@ -14,10 +14,15 @@ export type MutationCreateUserArgs = {
 export type MutationLoginArgs = {
   email: Scalars['String'];
   password: Scalars['String'];
+  secretKey?: Scalars['String'];
 };
 
 export type MutationResetPasswordArgs = {
-    email: Scalars['String'];
-    oldPassword: Scalars['String'];
-    newPassword: Scalars['String'];
+  email: Scalars['String'];
+  oldPassword: Scalars['String'];
+  newPassword: Scalars['String'];
+};
+
+export type MutationEnable2FAArgs = {
+  email: Scalars['String'];
 };
