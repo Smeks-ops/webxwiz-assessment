@@ -11,7 +11,13 @@ export type MutationCreateUserArgs = {
   password: Scalars['String'];
 };
 
-export type MutationLogin = {
+export type MutationLoginArgs = {
   email: Scalars['String'];
   password: Scalars['String'];
+};
+
+export type MutationResetPasswordArgs = {
+    email: Scalars['String'];
+    oldPassword: Scalars['String'];
+    newPassword: Scalars['String'];
 };

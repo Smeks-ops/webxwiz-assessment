@@ -1,10 +1,15 @@
 import { signToken } from '../../../helpers/auth.helpers';
-import { ILoginInput, IUser } from '../../../interfaces/user.interface';
+import {
+  ILoginInput,
+  ILoginResponse,
+  IResetPasswordInput,
+  IUser,
+} from '../../../interfaces/user.interface';
 import User from '../../../models/User';
 import * as bcrypt from 'bcrypt';
 
 export default class UserService {
-  static async registerUser(input: IUser) {
+  static async registerUser(input: IUser): Promise<IUser> {
     try {
       // Check if a user with the same email already exists
       const existingUser = await User.findOne({ email: input.email });
@@ -28,7 +33,7 @@ export default class UserService {
     }
   }
 
-  static async login(input: ILoginInput) {
+  static async login(input: ILoginInput): Promise<ILoginResponse> {
     const { email, password } = input;
 
     try {
@@ -55,6 +60,36 @@ export default class UserService {
       };
     } catch (error) {
       console.log(error);
+      throw new Error(error.message);
+    }
+  }
+
+  static async resetPassword(input: IResetPasswordInput): Promise<IUser> {
+    try {
+      const { email, oldPassword, newPassword } = input;
+
+      const user = await User.findOne({ email });
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+
+      if (!isPasswordValid) {
+        throw new Error('Invalid login credentials');
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      const updatedUser = await User.findByIdAndUpdate(
+        { _id: user.id },
+        { password: hashedPassword },
+        { new: true },
+      );
+
+      return updatedUser;
+    } catch (error) {
       throw new Error(error.message);
     }
   }

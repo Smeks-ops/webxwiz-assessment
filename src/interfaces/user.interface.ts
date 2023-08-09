@@ -9,3 +9,19 @@ export interface ILoginInput {
     email: string;
     password: string;
 }
+
+export interface ILoginResponse {
+    user: IUser;
+    token: string;
+}
+
+export interface IResetPasswordInput {
+    email: string;
+    oldPassword: string;
+    newPassword: string;
+}
+
+export interface IResetPasswordResponse {
+    user: IUser;
+    token: string;
+}

@@ -11,7 +11,7 @@ type CreateUserResponse {
   message: String!
 }
 
-type loginResponse {
+type LoginResponse {
   token: String
   user: User
   success: Boolean!
@@ -30,6 +30,6 @@ input UserInput {
 
 type Mutation {
   registerUser(email: String!, password: String): CreateUserResponse!
-  login(email: String!, password: String!): loginResponse!
+  login(email: String!, password: String!): LoginResponse!
+  resetPassword(email: String!, oldPassword: String!, newPassword: String!): CreateUserResponse!
 }
-

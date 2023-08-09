@@ -1,6 +1,10 @@
-import { MutationCreateUserArgs, MutationLogin } from '../../../types/generated';
+import {
+  MutationCreateUserArgs,
+  MutationLoginArgs,
+  MutationResetPasswordArgs,
+} from '../../../types/generated';
 import UserService from './services';
-import { loginInputSchema, registrationInputSchema } from './validators';
+import { loginInputSchema, registrationInputSchema, resetPasswordInputSchema } from './validators';
 
 const resolvers = {
   Mutation: {
@@ -24,7 +28,7 @@ const resolvers = {
       }
     },
 
-    login: async (_, { email, password }: MutationLogin) => {
+    login: async (_, { email, password }: MutationLoginArgs) => {
       try {
         // Validate input against the schema with zod
         const validatedInput = loginInputSchema.parse({ email, password });
@@ -42,6 +46,26 @@ const resolvers = {
         };
       } catch (error) {
         console.log(error);
+        throw new Error(error.message);
+      }
+    },
+
+    resetPassword: async (_, { email, oldPassword, newPassword }: MutationResetPasswordArgs) => {
+      try {
+        const validatedInput = resetPasswordInputSchema.parse({ email, oldPassword, newPassword });
+
+        const user = await UserService.resetPassword({
+          email: validatedInput.email,
+          oldPassword: validatedInput.oldPassword,
+          newPassword: validatedInput.newPassword,
+        });
+
+        return {
+          user,
+          success: true,
+          message: 'Password reset successfully',
+        };
+      } catch (error) {
         throw new Error(error.message);
       }
     },
