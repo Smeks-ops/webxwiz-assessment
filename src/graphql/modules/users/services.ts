@@ -1,4 +1,5 @@
-import IUser from '../../../interfaces/user.interface';
+import { signToken } from '../../../helpers/auth.helpers';
+import { ILoginInput, IUser } from '../../../interfaces/user.interface';
 import User from '../../../models/User';
 import * as bcrypt from 'bcrypt';
 
@@ -23,7 +24,38 @@ export default class UserService {
 
       return newUser;
     } catch (error) {
-        throw new Error(error.message);
+      throw new Error(error.message);
+    }
+  }
+
+  static async login(input: ILoginInput) {
+    const { email, password } = input;
+
+    try {
+      const user = await User.findOne({ email });
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if (!isPasswordValid) {
+        throw new Error('Invalid login credentials');
+      }
+
+      const accessToken = signToken({
+        sub: user.id,
+        email: user.email,
+      });
+
+      return {
+        user,
+        token: accessToken,
+      };
+    } catch (error) {
+      console.log(error);
+      throw new Error(error.message);
     }
   }
 }

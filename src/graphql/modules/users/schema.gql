@@ -5,7 +5,14 @@ type User {
   secretKey: String
 }
 
-type CreateUserPayload {
+type CreateUserResponse {
+  user: User
+  success: Boolean!
+  message: String!
+}
+
+type loginResponse {
+  token: String
   user: User
   success: Boolean!
   message: String!
@@ -22,5 +29,7 @@ input UserInput {
 }
 
 type Mutation {
-  registerUser(email: String!, password: String): CreateUserPayload!
+  registerUser(email: String!, password: String): CreateUserResponse!
+  login(email: String!, password: String!): loginResponse!
 }
+
