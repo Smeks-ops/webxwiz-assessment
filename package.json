@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A simple API for managing user authentication and two-factor authorization.",
   "main": "src/index.ts",
-  "repository": "git@github.com:ramonxm/graphql-api.git",
+  "repository": "https://github.com/Smeks-ops/webxwiz-assessment",
   "author": "Osemeke Echenim <echenim.osemeke@gmail.com>",
   "license": "",
   "private": false,

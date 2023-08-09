@@ -4,7 +4,7 @@ import {
   MutationEnable2FAArgs,
   MutationLoginArgs,
   MutationResetPasswordArgs,
-} from '../../../types/generated';
+} from '../../../types/queryArgs';
 import UserService from './services';
 import {
   enable2FAInputSchema,
